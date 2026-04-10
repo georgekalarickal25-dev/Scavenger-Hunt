@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Challenge</title>
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #1e293b;
+      --card: rgba(255,255,255,0.08);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --accent: #f59e0b;
+      --accent2: #ef4444;
+      --success: #22c55e;
+      --border: rgba(255,255,255,0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top, rgba(245,158,11,0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(239,68,68,0.14), transparent 28%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 720px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: #fde68a;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .prompt {
+      font-size: 1.1rem;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1 1 260px;
+      min-width: 0;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 16px 18px;
+      font-size: 1.1rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: rgba(245,158,11,0.55);
+      box-shadow: 0 0 0 4px rgba(245,158,11,0.12);
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 16px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), #fb7185);
+      color: white;
+    }
+
+    button:hover { filter: brightness(1.05); }
+
+    .hint {
+      margin-top: 16px;
+      color: #fde68a;
+      font-size: 0.95rem;
+    }
+
+    .message {
+      min-height: 28px;
+      margin-top: 16px;
+      font-weight: 700;
+    }
+
+    .error { color: #fecaca; }
+    .ok { color: #bbf7d0; }
+
+    .success-box {
+      display: none;
+      margin-top: 28px;
+      padding: 24px;
+      border-radius: 18px;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.25);
+      animation: fadeIn 500ms ease;
+    }
+
+    .success-box h2 {
+      margin-top: 0;
+      font-size: 1.6rem;
+      color: #dcfce7;
+    }
+
+    .clue {
+      font-size: 1.15rem;
+      line-height: 1.8;
+      color: var(--text);
+    }
+
+    .small {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge">FINAL ACCESS POINT</div>
+    <h1>Only those who have understood may proceed.</h1>
+    <p class="sub">
+      Enter the final code your team has discovered. Pay attention to what was given along the way.
+    </p>
+
+    <div id="gate">
+      <div class="prompt">Enter the code:</div>
+      <div class="row">
+        <input id="codeInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="••••" aria-label="Enter 4 digit code" />
+        <button id="unlockBtn">Unlock</button>
+      </div>
+      <div class="hint">Hint: Bring together what was revealed throughout the journey.</div>
+      <div id="message" class="message" aria-live="polite"></div>
+    </div>
+
+    <section id="successBox" class="success-box">
+      <h2>Access Granted</h2>
+      <p class="clue">
+        What was revealed in flame, guided in peace, and lifted by truth… follow it where your journey ends.
+      </p>
+      <p class="small">
+        Start near the sign of flame, move to the right, then lift your eyes.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const CORRECT_CODE = '1468';
+    const input = document.getElementById('codeInput');
+    const button = document.getElementById('unlockBtn');
+    const message = document.getElementById('message');
+    const successBox = document.getElementById('successBox');
+    const gate = document.getElementById('gate');
+
+    function unlock() {
+      const value = input.value.trim();
+
+      if (value.length === 0) {
+        message.textContent = 'Enter the code first.';
+        message.className = 'message error';
+        return;
+      }
+
+      if (value === CORRECT_CODE) {
+        message.textContent = 'Unlocked.';
+        message.className = 'message ok';
+        successBox.style.display = 'block';
+        gate.querySelector('.row').style.display = 'none';
+        gate.querySelector('.hint').style.display = 'none';
+      } else {
+        message.textContent = 'That is not correct. Revisit what you have collected.';
+        message.className = 'message error';
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    button.addEventListener('click', unlock);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') unlock();
+    });
+  </script>
+</body>
+</html>
